@@ -2,7 +2,7 @@
 
 # Python includes
 import numpy as np
-import random
+import copy
 
 # ROS includes
 import roslib
@@ -26,23 +26,34 @@ rospy.on_shutdown(cleanup_node)
 markers = rviz_tools.RvizMarkers('/camera/master0', 'cutter_marker')
 
 Param={
-  "offset":0,
-  "length":100,
-  "distance":500,
+  "refs":"/cropper/master",
+  "depth":200,
+  "length":300,
+  "distance":400,
   "color":"white"
 }
-
+Refs={}
 while not rospy.is_shutdown():
+  rospy.Rate(1).sleep() #1 Hz
   try:
     Param.update(rospy.get_param("/cutter"))
   except Exception as e:
-    print "get_param exception in wall.py:",e.args
-  # Publish a plane using a ROS Pose Msg
-  tr=Transform()
-  tr.translation.x=Param["offset"]
-  tr.translation.z=Param["distance"]
-  tr.rotation.w=np.sqrt(2)/2
-  tr.rotation.y=np.sqrt(2)/2
-  T=tflib.toRT(tr)
-  markers.publishPlane(T,Param["length"],Param["length"],Param["color"], 1.0) # pose, depth, width, color, lifetime
-  rospy.Rate(1).sleep() #1 Hz
+    pass
+  try:
+    Refs=rospy.get_param(Param["refs"])
+  except Exception as e:
+    pass
+  if "base" not in Refs: continue
+  if "offset" not in Refs: continue
+# Publish a plane using a ROS Pose Msg
+  tr1=Transform()
+  tr1.translation.x=Refs["base"]
+  tr1.translation.z=Param["distance"]+Param["depth"]/2
+  tr1.rotation.w=np.sqrt(2)/2
+  tr1.rotation.y=np.sqrt(2)/2
+  T1=tflib.toRT(tr1)
+  markers.publishPlane(T1,Param["depth"],Param["length"],Param["color"], 1.0) # pose, depth, width, color, lifetime
+  tr2=copy.copy(tr1)
+  tr2.translation.x=Refs["base"]+Refs["offset"]
+  T2=tflib.toRT(tr2)
+  markers.publishPlane(T2,Param["depth"],Param["length"],Param["color"], 1.0) # pose, depth, width, color, lifetime
