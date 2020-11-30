@@ -23,7 +23,7 @@ def cleanup_node():
 
 rospy.on_shutdown(cleanup_node)
 
-markers = rviz_tools.RvizMarkers('/camera/master0', 'cutter_marker')
+markers = rviz_tools.RvizMarkers('camera/master0', 'cutter_marker')
 
 Param={
   "refs":"/cropper/master",
