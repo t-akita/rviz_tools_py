@@ -7,6 +7,7 @@ import copy
 # ROS includes
 import roslib
 import rospy
+from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Pose, Point, Quaternion, Vector3, Polygon, Transform
 from tf import transformations # rotation_matrix(), concatenate_matrices()
 from rovi_utils import tflib
@@ -27,10 +28,11 @@ markers = rviz_tools.RvizMarkers('camera/master0', 'cutter_marker')
 
 Param={
   "refs":"/cropper/master",
-  "depth":200,
-  "length":300,
-  "distance":400,
-  "color":"white"
+  "base":-100,
+  "offset":200,
+  "width":10,
+  "radius":75,
+  "distance":550,
 }
 Refs={}
 while not rospy.is_shutdown():
@@ -43,17 +45,18 @@ while not rospy.is_shutdown():
     Refs=rospy.get_param(Param["refs"])
   except Exception as e:
     pass
-  if "base" not in Refs: continue
-  if "offset" not in Refs: continue
-# Publish a plane using a ROS Pose Msg
   tr1=Transform()
-  tr1.translation.x=Refs["base"]
-  tr1.translation.z=Param["distance"]+Param["depth"]/2
   tr1.rotation.w=np.sqrt(2)/2
   tr1.rotation.y=np.sqrt(2)/2
+  tr1.translation.x=Param["base"] if "base" not in Refs else Refs["base"]
+  tr1.translation.z=Param["distance"] if "distance" not in Refs else Refs["distance"]
+  radius=Param["radius"] if "radius" not in Refs else Refs["radius"]
+  width=Param["width"] if "width" not in Refs else Refs["width"]
   T1=tflib.toRT(tr1)
-  markers.publishPlane(T1,Param["depth"],Param["length"],Param["color"], 1.0) # pose, depth, width, color, lifetime
+  color='translucent_dark'
+  markers.publishCylinder(T1,color, width, radius, 1.0) # pose, color, scale, lifetime
   tr2=copy.copy(tr1)
-  tr2.translation.x=Refs["base"]+Refs["offset"]
+  offset=Param["offset"] if "offset" not in Refs else Refs["offset"]
+  tr2.translation.x=tr2.translation.x+offset
   T2=tflib.toRT(tr2)
-  markers.publishPlane(T2,Param["depth"],Param["length"],Param["color"], 1.0) # pose, depth, width, color, lifetime
+  markers.publishCylinder(T2,color, width, radius, 1.0)
