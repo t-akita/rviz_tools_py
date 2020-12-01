@@ -31,12 +31,18 @@ Param={
   "base":-100,
   "offset":200,
   "width":10,
-  "radius":75,
+  "span":150,
   "distance":550,
 }
 Refs={}
+
+tr1=Transform()
+tr1.rotation.w=np.sqrt(2)/2
+tr1.rotation.y=np.sqrt(2)/2
+color=(0.1,0.1,0.1)
+
 while not rospy.is_shutdown():
-  rospy.Rate(1).sleep() #1 Hz
+  rospy.Rate(5).sleep() #1 Hz
   try:
     Param.update(rospy.get_param("/cutter"))
   except Exception as e:
@@ -45,18 +51,13 @@ while not rospy.is_shutdown():
     Refs=rospy.get_param(Param["refs"])
   except Exception as e:
     pass
-  tr1=Transform()
-  tr1.rotation.w=np.sqrt(2)/2
-  tr1.rotation.y=np.sqrt(2)/2
   tr1.translation.x=Param["base"] if "base" not in Refs else Refs["base"]
   tr1.translation.z=Param["distance"] if "distance" not in Refs else Refs["distance"]
-  radius=Param["radius"] if "radius" not in Refs else Refs["radius"]
-  width=Param["width"] if "width" not in Refs else Refs["width"]
+  span=Param["span"] if "span" not in Refs else Refs["span"]
   T1=tflib.toRT(tr1)
-  color='translucent_dark'
-  markers.publishCylinder(T1,color, width, radius, 1.0) # pose, color, scale, lifetime
+  markers.publishPlane(T1,span,span,color,1.0) # pose, color, scale, lifetime
   tr2=copy.copy(tr1)
   offset=Param["offset"] if "offset" not in Refs else Refs["offset"]
   tr2.translation.x=tr2.translation.x+offset
   T2=tflib.toRT(tr2)
-  markers.publishCylinder(T2,color, width, radius, 1.0)
+  markers.publishPlane(T2,span,span,color,1.0)
