@@ -55,7 +55,7 @@ def cleanup_node():
     # 2021/03/16 hato ------------------------------ start ------------------------------
     # print "Shutting down node"
     print("Shutting down node")
-    # 2021/03/16 hato ------------------------------ start ------------------------------
+    # 2021/03/16 hato ------------------------------  end  ------------------------------
     markers.deleteAllMarkers()
 
 rospy.on_shutdown(cleanup_node)
