@@ -52,7 +52,10 @@ rospy.init_node('test', anonymous=False, log_level=rospy.INFO, disable_signals=F
 
 # Define exit handler
 def cleanup_node():
-    print "Shutting down node"
+    # 2021/03/16 hato ------------------------------ start ------------------------------
+    # print "Shutting down node"
+    print("Shutting down node")
+    # 2021/03/16 hato ------------------------------ start ------------------------------
     markers.deleteAllMarkers()
 
 rospy.on_shutdown(cleanup_node)
