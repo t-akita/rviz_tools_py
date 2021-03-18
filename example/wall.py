@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# 2021/03/17 hato #!/usr/bin/env python -> !/usr/bin/env python3
 
 # Python includes
 import numpy as np
@@ -18,7 +19,10 @@ rospy.init_node('wall', anonymous=False, log_level=rospy.INFO, disable_signals=F
 
 # Define exit handler
 def cleanup_node():
-  print "Shutting down node"
+  # 2021/03/16 hato ------------------------------ start ------------------------------
+  # print "Shutting down node"
+  print("Shutting down node")
+  # 2021/03/16 hato ------------------------------  end  ------------------------------
   markers.deleteAllMarkers()
 
 rospy.on_shutdown(cleanup_node)
@@ -34,7 +38,10 @@ while not rospy.is_shutdown():
   try:
     Config.update(rospy.get_param("/config/wall"))
   except Exception as e:
-    print "get_param exception in wall.py:",e.args
+    # 2021/03/16 hato ------------------------------ start ------------------------------
+    # print "get_param exception in wall.py:",e.args
+    print("get_param exception in wall.py:",e.args)
+    # 2021/03/16 hato ------------------------------  end  ------------------------------
   polygon = Polygon()
   xys=np.asarray(Config["anchors"]).reshape((-1,2))
   h=Config["height"]

@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# 2021/03/17 hato #!/usr/bin/env python -> !/usr/bin/env python3
 
 # Copyright (c) 2015, Carnegie Mellon University
 # All rights reserved.
@@ -52,7 +53,10 @@ rospy.init_node('test', anonymous=False, log_level=rospy.INFO, disable_signals=F
 
 # Define exit handler
 def cleanup_node():
-    print "Shutting down node"
+    # 2021/03/16 hato ------------------------------ start ------------------------------
+    # print "Shutting down node"
+    print("Shutting down node")
+    # 2021/03/16 hato ------------------------------  end  ------------------------------
     markers.deleteAllMarkers()
 
 rospy.on_shutdown(cleanup_node)
